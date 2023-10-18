@@ -26,8 +26,8 @@ router.get("/:id", async (req, res) => {
   const prodId = req.params.id;
   // be sure to include its associated Category and Tag data
   try {
-    const singleprod = await Product.findAll({
-      id: prodId,
+    const singleprod = await Product.findByPk(prodId, {
+      include: [Category, Tag],
     });
     if (!prodId) {
       res.json({ message: "There is no data for that ID" });
@@ -123,6 +123,17 @@ router.delete("/:id", (req, res) => {
   })
     .then((delProd) => {
       res.status(200).json(delProd);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+  ProductTag.destroy({
+    where: {
+      product_id: req.params.id,
+    },
+  })
+    .then((delProdTag) => {
+      res.status(200).json(delProdTag);
     })
     .catch((err) => {
       res.status(400).json(err);
